@@ -1,10 +1,7 @@
-name: Complete workflow
+name: Prod workflow
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 

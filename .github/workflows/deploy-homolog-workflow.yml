@@ -1,10 +1,7 @@
-name: Complete workflow
+name: Homolog Workflow
 
 on:
   push:
-    branches:
-      - homologation
-  pull_request:
     branches:
       - homologation
 
