@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ConnectionOptions } from 'typeorm';
 import { SymbolSchema } from '../schema/symbol.schema';
 

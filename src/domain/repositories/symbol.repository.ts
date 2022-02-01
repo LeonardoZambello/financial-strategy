@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Symbol } from "../entities/symbol.entity";
 
 export interface ISymbolRepository {

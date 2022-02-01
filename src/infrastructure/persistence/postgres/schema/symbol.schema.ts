@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('symbol')

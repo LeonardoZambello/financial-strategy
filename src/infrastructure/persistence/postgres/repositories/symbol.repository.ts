@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Symbol } from "src/domain/entities/symbol.entity";

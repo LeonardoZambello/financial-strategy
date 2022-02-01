@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Body, Controller, Post } from "@nestjs/common";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 import { SymbolService } from "../services/symbol.service";
