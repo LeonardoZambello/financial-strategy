@@ -12,13 +12,12 @@ const getSymbolNameListDTO = () => {
 describe('SymbolMapper', () => {
     it('Should return a null symbol', () => {
         const symbolMapper = new SymbolMapper();
-        const symbolNameListDTO: SymbolNameListDTO = null;
 
-        const symbol = symbolMapper.createDTOtoDomain(symbolNameListDTO);
+        const symbol = symbolMapper.createDTOtoDomain(null);
 
         expect(symbol).toBeNull();
     });
-    it.only('Should return a Symbol domain entity', () => {
+    it('Should return a Symbol domain entity', () => {
         const dto = getSymbolNameListDTO();
 
         const symbolMapper = new SymbolMapper();

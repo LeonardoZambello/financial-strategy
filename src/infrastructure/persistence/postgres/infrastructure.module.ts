@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Global, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { SYMBOL_REPOSITORY_NAME } from "src/domain/repositories/symbol.repository";

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import {MigrationInterface, QueryRunner} from "typeorm";
 
 export class InitialMigration1643721026355 implements MigrationInterface {

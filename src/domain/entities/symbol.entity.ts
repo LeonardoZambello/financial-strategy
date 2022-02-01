@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export class Symbol {
     id: string;
     name: string;
