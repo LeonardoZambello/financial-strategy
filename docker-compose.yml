@@ -1,0 +1,44 @@
+version: "3.2"
+volumes:
+  data:
+services:
+
+  financial-strategy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - financial-strategy-network
+    depends_on:
+      - "postgres-financial-strategy"
+    env_file:
+      - .env.example
+
+  postgres-financial-strategy:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: financial-strategy-database
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - financial-strategy-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5555:80
+    networks:
+      - financial-strategy-network
+
+networks:
+  financial-strategy-network:
+    driver: bridge
