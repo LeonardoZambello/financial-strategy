@@ -33,9 +33,9 @@ describe('SymbolNameListDTO', () => {
         const dto = getSymbolNameListDTO({ names: [] });
 
         const result = await validate(dto);
-
+        console.log(result);
         expect(result.length).toBe(1);
         expect(result[0].property).toBe('names');
-        expect(result[0].constraints['isNotEmptyObject']).not.toBeUndefined();
+        expect(result[0].constraints['arrayNotEmpty']).not.toBeUndefined();
     });
 });

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { SaveSymbolsUseCase } from "src/domain/use-cases/save-symbols";
+import { SaveSymbolsUseCase } from "../../domain/use-cases/save-symbols";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 import { SymbolMapper } from "../mappers/symbol.mapper";
 
