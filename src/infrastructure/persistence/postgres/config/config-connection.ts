@@ -9,12 +9,13 @@ const TypeOrmConnectionOptions: ConnectionOptions = {
 	entities: [
 		SymbolSchema
 	],
-	migrationsRun: true,
-	migrations: [__dirname + '/../migrations/**/*.ts'],
+	migrationsRun: false,
+	migrations: [process.env.NODE_ENV === 'development' ? __dirname + '/../migrations/**/*.ts' : 'dist/infrastructure/persistence/postgres/migrations/**/*.js'],
 	cli: {
 		migrationsDir: 'src/infrastructure/persistence/postgres/migrations',
+		entitiesDir: 'src/infrastructure/persistence/postgres/schema'
 	},
-	synchronize: true,
+	synchronize: false,
 	ssl: process.env.NODE_ENV === 'development' ? false : true,
 	extra: process.env.NODE_ENV === 'development' ? false : {ssl: {rejectUnauthorized: false}
 	}
