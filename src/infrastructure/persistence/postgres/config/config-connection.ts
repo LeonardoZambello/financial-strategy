@@ -2,12 +2,8 @@ import { ConnectionOptions } from 'typeorm';
 import { SymbolSchema } from '../schema/symbol.schema';
 
 const TypeOrmConnectionOptions: ConnectionOptions = {
+	url: process.env.DATABASE_URL,
 	type: 'postgres',
-	host: process.env.POSTGRES_HOST,
-	port: Number(process.env.POSTGRES_PORT),
-	username: process.env.POSTGRES_USER,
-	password: process.env.POSTGRES_PASSWORD,
-	database: process.env.POSTGRES_DATABASE,
 	entities: [
 		SymbolSchema
 	],
@@ -17,6 +13,9 @@ const TypeOrmConnectionOptions: ConnectionOptions = {
 		migrationsDir: 'src/infrastructure/persistence/postgres/migrations',
 	},
 	synchronize: false,
+	ssl: process.env.NODE_ENV === 'development' ? false : true,
+	extra: process.env.NODE_ENV === 'development' ? false : {ssl: {rejectUnauthorized: false}
+	}
 };
 
 export default TypeOrmConnectionOptions;
