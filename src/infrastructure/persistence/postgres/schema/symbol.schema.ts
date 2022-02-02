@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('symbol')
 export class SymbolSchema {
@@ -54,4 +54,26 @@ export class SymbolSchema {
         unique: false
     })
     ranking: number;
+
+    @Column({
+        type: 'text',
+        nullable: true,
+        name: 'reason',
+        unique: false
+    })
+    reason: string;
+
+    @CreateDateColumn({
+        type: 'timestamp',
+        nullable: false,
+        name: 'createdAt'
+    })
+    createdAt: Date;
+
+    @UpdateDateColumn({
+        type: 'timestamp',
+        nullable: false,
+        name: 'updatedAt'
+    })
+    updatedAt: Date;
 }

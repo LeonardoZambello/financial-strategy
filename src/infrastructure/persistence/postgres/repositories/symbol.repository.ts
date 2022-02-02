@@ -4,7 +4,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Symbol } from "src/domain/entities/symbol.entity";
 import { ISymbolRepository } from "src/domain/repositories/symbol.repository";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
+import { isNull } from "util";
 import { SymbolSchema } from "../schema/symbol.schema";
 
 @Injectable()
@@ -13,6 +14,10 @@ export class SymbolRepository implements ISymbolRepository {
         @InjectRepository(SymbolSchema) private symbolRepository: Repository<SymbolSchema>
     ) {}
 
+    async saveAll(symbols: Symbol[]): Promise<void> {
+        await this.symbolRepository.save(symbols);
+    }
+    
     async save(symbol: Symbol): Promise<void> {
         await this.symbolRepository.save(symbol);
     }
@@ -23,5 +28,15 @@ export class SymbolRepository implements ISymbolRepository {
                 name: name
             }
         })
-    }   
+    }
+    
+    async findSymbolsWithOutForwardPE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                reason: IsNull(),
+                forwardPE: IsNull()
+            },
+            take: 10
+        });
+    }
 }
