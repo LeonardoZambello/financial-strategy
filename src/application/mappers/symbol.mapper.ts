@@ -13,7 +13,7 @@ export class SymbolMapper {
 
         dto.names.forEach(name => {
             const symbol = new Symbol();
-            symbol.name = name;
+            symbol.name = name.toUpperCase();
             symbols.push(symbol);
         });
 

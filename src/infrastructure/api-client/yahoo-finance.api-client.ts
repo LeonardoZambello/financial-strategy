@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import * as nock from 'nock';
 
 @Injectable()
 export class YahooFinanceAPICliente {
@@ -27,9 +26,36 @@ export class YahooFinanceAPICliente {
                     }
                 }
             )
-            
+
             if (status === 200) return data.quoteResponse.result[0].forwardPE;
-            
+
+            if (status === 429) return Promise.reject('Error status code: 429');
+
+        } catch (error) {
+            console.log(`Error while calling yahoo api: ${error}`);
+        }
+    }
+
+    async collectROE(name: string): Promise<number> {
+        try {
+            const { data, status } = await axios.get(
+                `${this.BASE_URL}${this.ROE_API}/${name}.SA`,
+                {
+                    headers: {
+                        'x-api-key': this.API_KEY
+                    },
+                    params: {
+                        'modules': 'financialData'
+                    },
+                    validateStatus: function (status) {
+                        if (status !== 200 && status !== 429) return false
+                        return true
+                    }
+                }
+            )
+
+            if (status === 200) return data.quoteSummary.result[0].financialData.returnOnEquity.raw;
+
             if (status === 429) return Promise.reject('Error status code: 429');
 
         } catch (error) {
