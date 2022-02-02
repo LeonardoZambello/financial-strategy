@@ -12,20 +12,22 @@ export class CollectSymbolROEJob {
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async handle(): Promise<void> {
-        const symbols = await this.symbolRepository.findSymbolsWithOutROE();
+        if (process.env.ENABLE_JOB_ROE === 'true') {
+            const symbols = await this.symbolRepository.findSymbolsWithOutROE();
 
-        if (symbols.length) {
-            for (let symbol of symbols) {
-                const symbolROE = await this.yahooFinanceAPICliente.collectROE(symbol.name);
+            if (symbols.length) {
+                for (let symbol of symbols) {
+                    const symbolROE = await this.yahooFinanceAPICliente.collectROE(symbol.name);
 
-                if (!symbolROE) {
-                    symbol.reason = 'Symbol not found in Yahoo API';
+                    if (!symbolROE) {
+                        symbol.reason = 'Symbol not found in Yahoo API';
 
-                    await this.symbolRepository.save(symbol);
-                } else {
-                    symbol.roe = symbolROE;
+                        await this.symbolRepository.save(symbol);
+                    } else {
+                        symbol.roe = symbolROE;
 
-                    await this.symbolRepository.save(symbol);
+                        await this.symbolRepository.save(symbol);
+                    }
                 }
             }
         }
