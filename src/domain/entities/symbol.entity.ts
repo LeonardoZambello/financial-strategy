@@ -8,4 +8,7 @@ export class Symbol {
     forwardPE: number;
     forwardPEPosition: number;
     ranking: number;
+    reason: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
