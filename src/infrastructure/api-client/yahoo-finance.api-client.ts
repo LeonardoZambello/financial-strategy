@@ -20,11 +20,17 @@ export class YahooFinanceAPICliente {
                     },
                     params: {
                         'symbols': `${name}.SA`
+                    },
+                    validateStatus: function (status) {
+                        if (status !== 200 && status !== 429) return false
+                        return true
                     }
                 }
             )
             
             if (status === 200) return data.quoteResponse.result[0].forwardPE;
+            
+            if (status === 429) return Promise.reject('Error status code: 429');
 
         } catch (error) {
             console.log(`Error while calling yahoo api: ${error}`);

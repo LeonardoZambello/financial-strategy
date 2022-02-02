@@ -49,4 +49,19 @@ describe('YahooFinanceAPICliente', () => {
 
         expect(result).toBeUndefined();
     });
+    it('Should reject promise if yahoo api return status code 429', async () => {
+        process.env.BASE_URL = 'https://yfapi.net';
+        process.env.FORWARDPE_API = '/v6/finance/quote';
+        process.env.API_KEY = 'RiIY8UDnFb8JWNdphDlJZ4R6M2GET0FDaWqbbnWi';
+
+        const symbol = 'AAAX4'
+
+        const yahooFinanceAPICliente = new YahooFinanceAPICliente();
+
+        nock(process.env.BASE_URL, { allowUnmocked: false })
+            .get(`${process.env.FORWARDPE_API}?symbols=${symbol}.SA`)
+            .reply(429);
+
+        await expect(yahooFinanceAPICliente.collectForwardPE(symbol)).rejects.toBe('Error status code: 429');
+    });
 });

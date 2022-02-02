@@ -77,4 +77,25 @@ describe('CollectSymbolForwardPEJob', () => {
         expect(symbolRepository.save).toBeCalledTimes(symbols.length);
         expect(symbol.reason).toBe('Symbol not found in Yahoo API');
     });
+    it.only('Should not save symbol forwardPE if Yahoo API finance throws', async () => {
+        const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
+
+        const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
+
+        const symbols = new Array<Symbol>();
+
+        const symbol = new Symbol();
+        symbol.name = 'AAAA5';
+
+        symbols.push(symbol);
+
+        symbolRepository.findSymbolsWithOutForwardPE.mockReturnValueOnce(Promise.resolve(symbols));
+
+        yahooFinanceAPICliente.collectForwardPE.mockReturnValueOnce(Promise.reject('Error status code: 429'));
+
+        await expect(collectSymbolForwardPEJob.handle()).rejects.toBe('Error status code: 429');
+        expect(symbol.reason).toBeUndefined();
+        expect(symbol.forwardPE).toBeUndefined();
+        expect(symbolRepository.save).not.toBeCalled();
+    });
 });
