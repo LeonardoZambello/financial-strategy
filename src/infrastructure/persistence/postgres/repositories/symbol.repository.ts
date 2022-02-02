@@ -4,8 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Symbol } from "src/domain/entities/symbol.entity";
 import { ISymbolRepository } from "src/domain/repositories/symbol.repository";
-import { IsNull, Repository } from "typeorm";
-import { isNull } from "util";
+import { IsNull, Not, Repository } from "typeorm";
 import { SymbolSchema } from "../schema/symbol.schema";
 
 @Injectable()
@@ -38,5 +37,60 @@ export class SymbolRepository implements ISymbolRepository {
             },
             take: 10
         });
+    }
+
+    async findSymbolsWithOutROE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                reason: IsNull(),
+                roe: IsNull()
+            },
+            take: 10
+        });
+    }
+
+    async findSymbolsWithROE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                roe: Not(IsNull()),
+                reason: IsNull()
+            },
+            order: {
+                roe: "DESC"
+            }
+        })
+    }
+
+    async findSymbolsWithForwardPE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                forwardPE: Not(IsNull()),
+                reason: IsNull()
+            },
+            order: {
+                forwardPE: "ASC"
+            }
+        })
+    }
+
+    async findSymbolsWithROEAndForwardPE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                forwardPEPosition: Not(IsNull()),
+                roePosition: Not(IsNull()),
+                reason: IsNull()
+            }
+        })
+    }
+
+    async findSymbolsByRankingDesc(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                ranking: Not(IsNull)
+            },
+            order: {
+                ranking: 'ASC'
+            }
+        })
     }
 }
