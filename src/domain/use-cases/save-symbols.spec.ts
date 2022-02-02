@@ -42,25 +42,6 @@ describe('SaveSymbolsUseCase', () => {
         expect(symbolRepository.save).not.toBeCalled();
         expect(symbolRepository.findByName).not.toBeCalled();
     });
-    it('Should save only symbols where name.length is equals to 5', async () => {
-        const symbolOne = new Symbol();
-        symbolOne.name = 'AAA4';
-
-        const symbolTwo = new Symbol();
-        symbolTwo.name = 'AAAA6';
-
-        const symbols = new Array<Symbol>();
-        symbols.push(symbolOne, symbolTwo)
-
-        const { symbolRepository } = setupDependencies();
-
-        saveSymbolsUseCase = new SaveSymbolsUseCase(symbolRepository);
-
-        await saveSymbolsUseCase.handle(symbols);
-
-        expect(symbolRepository.save).toBeCalledTimes(symbols.length - 1);
-        expect(symbolRepository.findByName).toBeCalledTimes(symbols.length - 1);
-    });
     it('Should not save a symbol duplicated', async () => {
         const symbolOne = new Symbol();
         symbolOne.name = 'AAAA6';

@@ -1,9 +1,9 @@
-import { Length, ArrayNotEmpty } from "class-validator";
+import { ArrayNotEmpty, IsString } from "class-validator";
 
 export class SymbolNameListDTO {
-    @Length(5, 5, {
+    @ArrayNotEmpty()
+    @IsString({
         each: true
     })
-    @ArrayNotEmpty()
     names: string[]
 }
