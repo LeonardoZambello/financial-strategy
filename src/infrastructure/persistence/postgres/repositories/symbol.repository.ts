@@ -4,19 +4,47 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Symbol } from "src/domain/entities/symbol.entity";
 import { ISymbolRepository } from "src/domain/repositories/symbol.repository";
+import { PaginationVO } from "src/domain/value_objects/pagination.value-object";
 import { IsNull, Not, Repository } from "typeorm";
 import { SymbolSchema } from "../schema/symbol.schema";
 
 @Injectable()
 export class SymbolRepository implements ISymbolRepository {
-    constructor (
+    constructor(
         @InjectRepository(SymbolSchema) private symbolRepository: Repository<SymbolSchema>
-    ) {}
+    ) { }
+
+    async findAll(paginationVO: PaginationVO): Promise<Symbol[]> {
+        const {
+            limit,
+            skip,
+            forwardPE,
+            roe
+        } = paginationVO;
+
+        let queryBase = this.symbolRepository.createQueryBuilder('symbol')
+            .skip(Number(skip ?? 0))
+            .take(Number(limit ?? 25))
+            .orderBy('symbol.createdAt', 'DESC');
+
+
+        if (!forwardPE && !roe) queryBase = queryBase.andWhere(`symbol.roe is null`).andWhere(`symbol.forwardPE is null`);
+
+        if (forwardPE && !roe) queryBase = queryBase.andWhere(`symbol.roe is null`).andWhere(`symbol.forwardPE <= :forwardPE`, { forwardPE: forwardPE });
+
+        if (!forwardPE && roe) queryBase = queryBase.andWhere(`symbol.roe >= :roe`, { roe: roe }).andWhere(`symbol.forwardPE is null`);
+
+        if (forwardPE && roe) queryBase = queryBase.andWhere(`symbol.roe >= :roe`, { roe: roe }).andWhere(`symbol.forwardPE <= :forwardPE`, { forwardPE: forwardPE });
+
+        const symbols = await queryBase.getMany();
+
+        return symbols;
+    }
 
     async saveAll(symbols: Symbol[]): Promise<void> {
         await this.symbolRepository.save(symbols);
     }
-    
+
     async save(symbol: Symbol): Promise<void> {
         await this.symbolRepository.save(symbol);
     }
@@ -28,7 +56,7 @@ export class SymbolRepository implements ISymbolRepository {
             }
         })
     }
-    
+
     async findSymbolsWithOutForwardPE(): Promise<Symbol[]> {
         return await this.symbolRepository.find({
             where: {

@@ -24,9 +24,9 @@ export class SymbolMapper {
         const dto = new FindSymbolByNameDTO();
         dto.id = symbol.id;
         dto.name = symbol.name;
-        dto.roe = symbol.roe;
-        dto.forwardPE = symbol.forwardPE;
-        dto.ranking = symbol.ranking;
+        dto.roe = symbol.roe ? Number(symbol.roe) : null;
+        dto.forwardPE = symbol.forwardPE ? Number(symbol.forwardPE) : null;
+        dto.ranking = symbol.ranking ? Number(symbol.ranking) : null;
         dto.reason = symbol.reason;
         return dto;
     }
