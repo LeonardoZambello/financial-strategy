@@ -12,9 +12,7 @@ export class SaveSymbolsUseCase {
     async handle(symbols: Symbol[]): Promise<void> {
         if(!symbols.length) throw new SymbolsNotFound();
 
-        const validSymbols = symbols.filter(symbol => symbol.name.length === 5);
-
-        for (let symbol of validSymbols) {
+        for (let symbol of symbols) {
             const symbolFromDb = await this.symbolRepository.findByName(symbol.name);
 
             if(!symbolFromDb) await this.symbolRepository.save(symbol);

@@ -11,23 +11,23 @@ const getSymbolNameListDTO = (changes = null) => {
 }
 
 describe('SymbolNameListDTO', () => {
-    it('Should validate if list is null', async () => {
+    it.only('Should validate if list is null', async () => {
         const dto = getSymbolNameListDTO({ names: null });
 
         const result = await validate(dto);
 
         expect(result.length).toBe(1);
         expect(result[0].property).toBe('names');
-        expect(result[0].constraints['isLength']).not.toBeUndefined();
+        expect(result[0].constraints['arrayNotEmpty']).not.toBeUndefined();
     });
-    it('Should validate if any name has length different of 5', async () => {
-        const dto = getSymbolNameListDTO({ names: ['AAA4'] });
+    it('Should validate if any name is not a string', async () => {
+        const dto = getSymbolNameListDTO({ names: [123] });
 
         const result = await validate(dto);
 
         expect(result.length).toBe(1);
         expect(result[0].property).toBe('names');
-        expect(result[0].constraints['isLength']).not.toBeUndefined();
+        expect(result[0].constraints['isString']).not.toBeUndefined();
     });
     it('Should validate if list is empty', async () => {
         const dto = getSymbolNameListDTO({ names: [] });

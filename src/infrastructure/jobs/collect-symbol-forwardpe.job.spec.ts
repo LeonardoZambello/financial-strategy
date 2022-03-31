@@ -15,6 +15,7 @@ const setupDependencies = () => {
 
 describe('CollectSymbolForwardPEJob', () => {
     it('Should collect symbol forwardPE with success', async () => {
+        process.env.ENABLE_JOB_FORWARDPE = 'true'
         const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
 
         const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
@@ -42,6 +43,7 @@ describe('CollectSymbolForwardPEJob', () => {
         expect(symbolTwo.forwardPE).toBe(10);
     });
     it('Should not collect symbol forwardPE if none symbol was found', async () => {
+        process.env.ENABLE_JOB_FORWARDPE = 'true'
         const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
 
         const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
@@ -55,6 +57,7 @@ describe('CollectSymbolForwardPEJob', () => {
         expect(symbolRepository.save).not.toBeCalled();
     });
     it('Should not collect symbol forwardPE if symbol name is invalid', async () => {
+        process.env.ENABLE_JOB_FORWARDPE = 'true'
         const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
 
         const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
@@ -77,7 +80,8 @@ describe('CollectSymbolForwardPEJob', () => {
         expect(symbolRepository.save).toBeCalledTimes(symbols.length);
         expect(symbol.reason).toBe('Symbol not found in Yahoo API');
     });
-    it.only('Should not save symbol forwardPE if Yahoo API finance throws', async () => {
+    it('Should not save symbol forwardPE if Yahoo API finance throws', async () => {
+        process.env.ENABLE_JOB_FORWARDPE = 'true'
         const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
 
         const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
@@ -96,6 +100,19 @@ describe('CollectSymbolForwardPEJob', () => {
         await expect(collectSymbolForwardPEJob.handle()).rejects.toBe('Error status code: 429');
         expect(symbol.reason).toBeUndefined();
         expect(symbol.forwardPE).toBeUndefined();
+        expect(symbolRepository.save).not.toBeCalled();
+    });
+    it('Should only execute job if env ENABLE_JOB_FORWARDPE is "true"', async () => {
+        process.env.ENABLE_JOB_FORWARDPE = 'false'
+
+        const {  symbolRepository ,yahooFinanceAPICliente } = setupDependencies();
+
+        const collectSymbolForwardPEJob = new CollectSymbolForwardPEJob(symbolRepository, yahooFinanceAPICliente);
+
+        await collectSymbolForwardPEJob.handle();
+
+        expect(symbolRepository.findSymbolsWithOutForwardPE).not.toBeCalled();
+        expect(yahooFinanceAPICliente.collectForwardPE).not.toBeCalled();
         expect(symbolRepository.save).not.toBeCalled();
     });
 });

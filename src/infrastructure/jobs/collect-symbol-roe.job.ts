@@ -4,7 +4,7 @@ import { SYMBOL_REPOSITORY_NAME } from "../../domain/repositories/symbol.reposit
 import { YahooFinanceAPICliente } from "../api-client/yahoo-finance.api-client";
 import { SymbolRepository } from "../persistence/postgres/repositories/symbol.repository";
 
-export class CollectSymbolForwardPEJob {
+export class CollectSymbolROEJob {
     constructor(
         @Inject(SYMBOL_REPOSITORY_NAME) private symbolRepository: SymbolRepository,
         private yahooFinanceAPICliente: YahooFinanceAPICliente
@@ -12,19 +12,19 @@ export class CollectSymbolForwardPEJob {
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async handle(): Promise<void> {
-        if (process.env.ENABLE_JOB_FORWARDPE === 'true') {
-            const symbols = await this.symbolRepository.findSymbolsWithOutForwardPE();
+        if (process.env.ENABLE_JOB_ROE === 'true') {
+            const symbols = await this.symbolRepository.findSymbolsWithOutROE();
 
             if (symbols.length) {
                 for (let symbol of symbols) {
-                    const symbolForwardPE = await this.yahooFinanceAPICliente.collectForwardPE(symbol.name);
+                    const symbolROE = await this.yahooFinanceAPICliente.collectROE(symbol.name);
 
-                    if (!symbolForwardPE) {
+                    if (!symbolROE) {
                         symbol.reason = 'Symbol not found in Yahoo API';
 
                         await this.symbolRepository.save(symbol);
                     } else {
-                        symbol.forwardPE = symbolForwardPE;
+                        symbol.roe = symbolROE;
 
                         await this.symbolRepository.save(symbol);
                     }
