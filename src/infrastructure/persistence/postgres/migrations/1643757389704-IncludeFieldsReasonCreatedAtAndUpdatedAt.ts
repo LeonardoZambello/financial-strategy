@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import {MigrationInterface, QueryRunner} from "typeorm";
 
 export class IncludeFieldsReasonCreatedAtAndUpdatedAt1643757389704 implements MigrationInterface {
