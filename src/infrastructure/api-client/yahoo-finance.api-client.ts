@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class YahooFinanceAPICliente {
 
+    private logger = new Logger(YahooFinanceAPICliente.name);
     private readonly BASE_URL = process.env.BASE_URL;
     private readonly FORWARDPE_API = process.env.FORWARDPE_API;
     private readonly ROE_API = process.env.ROE_API;
@@ -27,12 +28,14 @@ export class YahooFinanceAPICliente {
                 }
             )
 
+            console.log(data);
+
             if (status === 200) return data.quoteResponse.result[0].forwardPE;
 
             if (status === 429) return Promise.reject('Error status code: 429');
 
         } catch (error) {
-            console.log(`Error while calling yahoo api: ${error}`);
+            this.logger.error(`Error while calling yahoo api: ${error}`);
         }
     }
 
@@ -59,7 +62,7 @@ export class YahooFinanceAPICliente {
             if (status === 429) return Promise.reject('Error status code: 429');
 
         } catch (error) {
-            console.log(`Error while calling yahoo api: ${error}`);
+            this.logger.error(`Error while calling yahoo api: ${error}`);
         }
     }
 }

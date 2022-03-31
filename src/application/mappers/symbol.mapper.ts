@@ -1,5 +1,6 @@
 import { Injectable, Scope } from "@nestjs/common";
 import { Symbol } from "../../domain/entities/symbol.entity";
+import { FindSymbolByNameDTO } from "../dto/find-symbol-by-name.dto";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 
 @Injectable({
@@ -18,5 +19,15 @@ export class SymbolMapper {
         });
 
         return symbols;
+    }
+    createDomainToDTO(symbol: Symbol): FindSymbolByNameDTO {
+        const dto = new FindSymbolByNameDTO();
+        dto.id = symbol.id;
+        dto.name = symbol.name;
+        dto.roe = symbol.roe;
+        dto.forwardPE = symbol.forwardPE;
+        dto.ranking = symbol.ranking;
+        dto.reason = symbol.reason;
+        return dto;
     }
 }
