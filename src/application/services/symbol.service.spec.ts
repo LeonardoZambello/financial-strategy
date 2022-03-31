@@ -93,7 +93,7 @@ describe('SymbolService', () => {
         expect(findSymbolByNameUseCase.handle).not.toBeCalled();
         expect(symbolMapper.createDomainToDTO).not.toBeCalled();
     });
-    it.only('Should return a symbol filtering by provided name', async () => {
+    it('Should return a symbol filtering by provided name', async () => {
         const name = 'ANYNAME';
 
         const symbol = getSymbol();
