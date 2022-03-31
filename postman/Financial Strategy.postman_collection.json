@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "5df4e485-9577-423e-bf2b-8619b59ab823",
+		"name": "Financial Strategy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "FindSymbolByName",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/symbol/:name",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"symbol",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "ITSA4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SaveSymbolsList",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"names\": [\n        \"WEG3\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/symbol",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"symbol"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

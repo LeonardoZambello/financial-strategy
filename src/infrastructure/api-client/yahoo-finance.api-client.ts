@@ -28,8 +28,6 @@ export class YahooFinanceAPICliente {
                 }
             )
 
-            console.log(data);
-
             if (status === 200) return data.quoteResponse.result[0].forwardPE;
 
             if (status === 429) return Promise.reject('Error status code: 429');
