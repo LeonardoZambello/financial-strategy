@@ -11,7 +11,7 @@ const getSymbolNameListDTO = (changes = null) => {
 }
 
 describe('SymbolNameListDTO', () => {
-    it.only('Should validate if list is null', async () => {
+    it('Should validate if list is null', async () => {
         const dto = getSymbolNameListDTO({ names: null });
 
         const result = await validate(dto);
