@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Symbol } from "src/domain/entities/symbol.entity";
 import { ISymbolRepository } from "src/domain/repositories/symbol.repository";
 import { PaginationVO } from "src/domain/value_objects/pagination.value-object";
-import { IsNull, Not, Repository } from "typeorm";
+import { IsNull, Not, Repository, MoreThan, LessThan } from "typeorm";
 import { SymbolSchema } from "../schema/symbol.schema";
 
 @Injectable()
@@ -13,6 +13,12 @@ export class SymbolRepository implements ISymbolRepository {
     constructor(
         @InjectRepository(SymbolSchema) private symbolRepository: Repository<SymbolSchema>
     ) { }
+
+    async delete(name: string): Promise<void> {
+        await this.symbolRepository.delete({
+            name: name
+        })
+    }
 
     async findAll(paginationVO: PaginationVO): Promise<Symbol[]> {
         const {
@@ -92,11 +98,23 @@ export class SymbolRepository implements ISymbolRepository {
     async findSymbolsWithForwardPE(): Promise<Symbol[]> {
         return await this.symbolRepository.find({
             where: {
-                forwardPE: Not(IsNull()),
+                forwardPE: Not(IsNull()) && MoreThan(0),
                 reason: IsNull()
             },
             order: {
                 forwardPE: "ASC"
+            }
+        })
+    }
+
+    async findSymbolsWithNegativeForwardPE(): Promise<Symbol[]> {
+        return await this.symbolRepository.find({
+            where: {
+                forwardPE: Not(IsNull()) && LessThan(0),
+                reason: IsNull()
+            },
+            order: {
+                forwardPE: "DESC"
             }
         })
     }

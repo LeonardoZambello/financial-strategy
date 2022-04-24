@@ -1,5 +1,6 @@
 import { Injectable, Scope } from "@nestjs/common";
 import { Symbol } from "../../domain/entities/symbol.entity";
+import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 import { FindSymbolByNameDTO } from "../dto/find-symbol-by-name.dto";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 
@@ -7,18 +8,15 @@ import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
     scope: Scope.TRANSIENT
 })
 export class SymbolMapper {
-    createDTOtoDomain(dto: SymbolNameListDTO): Symbol[] {
+    createDTOtoDomain(dto: CreateOrUpdateSymbolDTO): Symbol {
         if(!dto) return null;
 
-        const symbols = new Array<Symbol>();
+        const symbol = new Symbol();
+        symbol.name = dto.name;
+        symbol.roe = dto.roe;
+        symbol.forwardPE = dto.PE;
 
-        dto.names.forEach(name => {
-            const symbol = new Symbol();
-            symbol.name = name.toUpperCase();
-            symbols.push(symbol);
-        });
-
-        return symbols;
+        return symbol;
     }
     createDomainToDTO(symbol: Symbol): FindSymbolByNameDTO {
         const dto = new FindSymbolByNameDTO();

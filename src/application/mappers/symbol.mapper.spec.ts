@@ -2,6 +2,7 @@ import { Symbol } from "../../domain/entities/symbol.entity";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 import { SymbolMapper } from "./symbol.mapper";
 import { v4 as uuidv4 } from 'uuid';
+import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 
 const getSymbolNameListDTO = (): SymbolNameListDTO => {
     const symbolNameListDTO = new SymbolNameListDTO();
@@ -10,6 +11,16 @@ const getSymbolNameListDTO = (): SymbolNameListDTO => {
 
     return symbolNameListDTO;
 }
+
+const getCreateOrUpdateSymbolDTO = (changes = null): CreateOrUpdateSymbolDTO => {
+    const createOrUpdateSymbolDTO = new CreateOrUpdateSymbolDTO();
+    
+    createOrUpdateSymbolDTO.name = 'ABC';
+    createOrUpdateSymbolDTO.PE = 100;
+    createOrUpdateSymbolDTO.roe = 1;
+
+    return Object.assign(createOrUpdateSymbolDTO, changes);
+} 
 
 const getSymbol = (): Symbol => {
     const symbol = new Symbol();
@@ -35,13 +46,15 @@ describe('SymbolMapper', () => {
         expect(symbol).toBeNull();
     });
     it('Should return a Symbol domain entity', () => {
-        const dto = getSymbolNameListDTO();
+        const dto = getCreateOrUpdateSymbolDTO();
 
         const symbolMapper = new SymbolMapper();
 
-        const symbols = symbolMapper.createDTOtoDomain(dto);
+        const symbol = symbolMapper.createDTOtoDomain(dto);
 
-        expect(symbols.length).toBe(dto.names.length);
+        expect(symbol.name).toBe(dto.name);
+        expect(symbol.roe).toBe(dto.roe);
+        expect(symbol.forwardPE).toBe(dto.PE);
     });
     it('Should return a FindSymbolByNameDTO', () => {
         const symbol = getSymbol();

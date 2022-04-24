@@ -30,6 +30,16 @@ export class RankSymbolsJob {
             await this.symbolRepository.saveAll(symbolsForwardPE);
         }
 
+        const negativeSymbolsForwardPE = await this.symbolRepository.findSymbolsWithNegativeForwardPE();
+
+        if (negativeSymbolsForwardPE.length) {
+            for (let symbolNegativeForwardPE of negativeSymbolsForwardPE) {
+                symbolNegativeForwardPE.forwardPEPosition = ((symbolsForwardPE.length) + negativeSymbolsForwardPE.indexOf(symbolNegativeForwardPE) + 1);
+            }
+            
+            await this.symbolRepository.saveAll(negativeSymbolsForwardPE);
+        }
+
         const symbolsToRank = await this.symbolRepository.findSymbolsWithROEAndForwardPE();
 
         if (symbolsToRank.length) {

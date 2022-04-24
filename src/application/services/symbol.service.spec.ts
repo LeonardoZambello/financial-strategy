@@ -9,6 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { FindSymbolByNameDTO } from "../dto/find-symbol-by-name.dto";
 import { Request } from 'express';
 import { FindAllSymbolsUseCase } from "../../domain/use-cases/find-all-symbols.use-case";
+import { DeleteSymbolUseCase } from "../../domain/use-cases/delete-symbol.use-case";
+import { CollectAndUpdateSymbolsValuesUseCase } from "../../domain/use-cases/collect-and-update-symbols-values.use-case";
+import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 
 const getSymbolNameListDTO = () => {
     const symbolNameListDTO = new SymbolNameListDTO();
@@ -18,16 +21,30 @@ const getSymbolNameListDTO = () => {
     return symbolNameListDTO;
 }
 
+const getCreateOrUpdateSymbolDTO = (changes = null): CreateOrUpdateSymbolDTO => {
+    const createOrUpdateSymbolDTO = new CreateOrUpdateSymbolDTO();
+    
+    createOrUpdateSymbolDTO.name = 'ABC';
+    createOrUpdateSymbolDTO.PE = 100;
+    createOrUpdateSymbolDTO.roe = 1;
+
+    return Object.assign(createOrUpdateSymbolDTO, changes);
+} 
+
 const setupDependencies = () => {
 	const saveSymbolUseCase = mock<SaveSymbolsUseCase>();
     const findSymbolByNameUseCase = mock<FindSymbolByNameUseCase>();
     const symbolMapper = mock<SymbolMapper>();
     const findAllSymbolsUseCase = mock<FindAllSymbolsUseCase>();
+    const deleteSymbolUseCase = mock<DeleteSymbolUseCase>();
+    const collectAndUpdateSymbolsValuesUseCase = mock<CollectAndUpdateSymbolsValuesUseCase>();
     const request = mock<Request>();
 	return {
 		saveSymbolUseCase,
         findSymbolByNameUseCase,
         findAllSymbolsUseCase,
+        deleteSymbolUseCase,
+        collectAndUpdateSymbolsValuesUseCase,
         symbolMapper,
         request
 	};
@@ -63,9 +80,9 @@ describe('SymbolService', () => {
     it('Should return null if a invalid dto is provided', async () => {
         const symbolNameList = null;
 
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const result = await symbolService.save(symbolNameList);
 
@@ -74,11 +91,11 @@ describe('SymbolService', () => {
         expect(saveSymbolUseCase.handle).not.toBeCalled();
     });
     it('Should save a list of symbols if valid data is provided', async () => {
-        const dto = getSymbolNameListDTO();
+        const dto = getCreateOrUpdateSymbolDTO();
 
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         await symbolService.save(dto);
 
@@ -89,9 +106,9 @@ describe('SymbolService', () => {
     it('Should return null if try to find a symbol by name and receive a null name', async () => {
         const name = null;
 
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const result = await symbolService.findSymbolByName(name);
 
@@ -104,13 +121,13 @@ describe('SymbolService', () => {
 
         const symbol = getSymbol();
 
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
         findSymbolByNameUseCase.handle.mockReturnValueOnce(Promise.resolve(symbol));
 
         symbolMapper.createDomainToDTO.mockReturnValueOnce(getFindSymbolByNameDTO(symbol));
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const result = await symbolService.findSymbolByName(name);
 
@@ -124,7 +141,7 @@ describe('SymbolService', () => {
         expect(symbolMapper.createDomainToDTO).toBeCalledWith(symbol);
     });
     it('Shold find symbols with pagination parameters with success', async () => {
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
         const symbols = new Array<Symbol>();
         const symbol = getSymbol();
@@ -134,7 +151,7 @@ describe('SymbolService', () => {
 
         symbolMapper.createDomainToDTO.mockReturnValueOnce(getFindSymbolByNameDTO(symbol));
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const result = await symbolService.findAllSymbols();
 
@@ -143,7 +160,7 @@ describe('SymbolService', () => {
         expect(symbolMapper.createDomainToDTO).toBeCalledTimes(symbols.length);
     });
     it('Should return null if not found symbols with pagination parameters', async () => {
-        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request } = setupDependencies();
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
         const symbols = new Array<Symbol>();
         const symbol = getSymbol();
@@ -151,12 +168,41 @@ describe('SymbolService', () => {
 
         findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve(null));
 
-        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, symbolMapper, request);
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const result = await symbolService.findAllSymbols();
 
         expect(result).toBeNull();
         expect(findAllSymbolsUseCase.handle).toBeCalledTimes(1);
         expect(symbolMapper.createDomainToDTO).not.toBeCalled();
+    });
+    it('Should return null if not receive a name to delete symbol', async () => {
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
+
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
+
+        const result = await symbolService.delete(null);
+
+        expect(result).toBeNull();
+    });
+    it('Should delete a symbol with success', async () => {
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
+
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
+
+        const symbolName = 'ABCD';
+
+        await symbolService.delete(symbolName);
+
+        expect(deleteSymbolUseCase.handle).toBeCalledWith(symbolName);
+    });
+    it('Should create or update a symbol with success', async () => {
+        const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
+
+        const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
+
+        await symbolService.createOrUpdateSymbols();
+
+        expect(collectAndUpdateSymbolsValuesUseCase.handle).toBeCalledTimes(1);
     });
 });
