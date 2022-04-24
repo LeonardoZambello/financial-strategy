@@ -35,6 +35,8 @@ describe('RankSymbolsJob', () => {
 
         symbolRepository.findSymbolsWithForwardPE.mockReturnValueOnce(Promise.resolve([]));
 
+        symbolRepository.findSymbolsWithNegativeForwardPE.mockReturnValueOnce(Promise.resolve([]));
+
         symbolRepository.findSymbolsWithROEAndForwardPE.mockReturnValueOnce(Promise.resolve([]));
 
         const rankSymbolsJob = new RankSymbolsJob(symbolRepository);
@@ -56,6 +58,32 @@ describe('RankSymbolsJob', () => {
         symbolRepository.findSymbolsWithROE.mockReturnValueOnce(Promise.resolve([]));
 
         symbolRepository.findSymbolsWithForwardPE.mockReturnValueOnce(Promise.resolve(symbolsWithForwardPE));
+
+        symbolRepository.findSymbolsWithNegativeForwardPE.mockReturnValueOnce(Promise.resolve([]));
+
+        symbolRepository.findSymbolsWithROEAndForwardPE.mockReturnValueOnce(Promise.resolve([]));
+
+        const rankSymbolsJob = new RankSymbolsJob(symbolRepository);
+
+        await rankSymbolsJob.handle();
+
+        expect(symbolRepository.saveAll).toBeCalledTimes(1);
+        expect(symbolOne.forwardPEPosition).toBe(1);
+        expect(symbolTwo.forwardPEPosition).toBe(2);
+    });
+    it('Should rank symbols by negative forwardPE if exists', async () => {
+        const { symbolRepository } = setupDependencies();
+
+        const symbolsWithForwardPE = new Array<Symbol>();
+        const symbolOne = createSymbol('XXXX6', 98, -1);
+        const symbolTwo = createSymbol('XXXX5', 10, -100);
+        symbolsWithForwardPE.push(symbolOne, symbolTwo);
+
+        symbolRepository.findSymbolsWithROE.mockReturnValueOnce(Promise.resolve([]));
+
+        symbolRepository.findSymbolsWithForwardPE.mockReturnValueOnce(Promise.resolve([]));
+
+        symbolRepository.findSymbolsWithNegativeForwardPE.mockReturnValueOnce(Promise.resolve(symbolsWithForwardPE));
 
         symbolRepository.findSymbolsWithROEAndForwardPE.mockReturnValueOnce(Promise.resolve([]));
 
@@ -85,6 +113,8 @@ describe('RankSymbolsJob', () => {
         symbolRepository.findSymbolsWithROE.mockReturnValueOnce(Promise.resolve([]));
 
         symbolRepository.findSymbolsWithForwardPE.mockReturnValueOnce(Promise.resolve([]));
+
+        symbolRepository.findSymbolsWithNegativeForwardPE.mockReturnValueOnce(Promise.resolve([]));
 
         symbolRepository.findSymbolsWithROEAndForwardPE.mockReturnValueOnce(Promise.resolve(symbolsToRank));
 

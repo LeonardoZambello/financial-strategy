@@ -1,7 +1,7 @@
 import { mock } from "jest-mock-extended";
 import { Symbol } from "../entities/symbol.entity";
 import { InvalidSymbolName } from "../exceptions/invalid-symbol-name.exception";
-import { SymbolsNotFound } from "../exceptions/symbol-not-found.exception";
+import { SymbolNotFound } from "../exceptions/symbol-not-found.exception";
 import { ISymbolRepository } from "../repositories/symbol.repository";
 import { FindSymbolByNameUseCase } from "./find-symbol-by-name";
 
@@ -61,7 +61,7 @@ describe('FindSymbolByNameUseCase', () => {
 
         findSymbolByNameUseCase = new FindSymbolByNameUseCase(symbolRepository);
 
-        await expect(findSymbolByNameUseCase.handle(symbol.name)).rejects.toThrowError(new SymbolsNotFound());
+        await expect(findSymbolByNameUseCase.handle(symbol.name)).rejects.toThrowError(new SymbolNotFound());
         expect(symbolRepository.findByName).toBeCalledWith(symbol.name);
     });
 });
