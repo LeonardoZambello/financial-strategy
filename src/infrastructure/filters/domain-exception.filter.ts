@@ -5,7 +5,7 @@ import { AbstractDomainException } from "../../domain/exceptions/abstract-domain
 import { Response } from "express";
 
 @Catch(AbstractDomainException)
-export class HttpExceptionFilter implements ExceptionFilter {
+export class DomainExceptionFilter implements ExceptionFilter {
   catch(exception: AbstractDomainException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
