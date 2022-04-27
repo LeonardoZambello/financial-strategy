@@ -36,7 +36,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"names\": [\n        \"WEG3\"\n    ]\n}",
+					"raw": "{\n    \"name\": \"TRPN\",\n    \"roe\": 99,\n    \"PE\": 99\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -50,6 +50,62 @@
 					],
 					"path": [
 						"symbol"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindAllSymbols",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/symbol?limit=100",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"symbol"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "skip",
+							"value": "5",
+							"disabled": true
+						},
+						{
+							"key": "roe",
+							"value": "0.1",
+							"disabled": true
+						},
+						{
+							"key": "forwardPE",
+							"value": "15",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CollectAndUpdateSymbols",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/symbol/update",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"symbol",
+						"update"
 					]
 				}
 			},

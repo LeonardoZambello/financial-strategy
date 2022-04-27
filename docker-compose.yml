@@ -3,19 +3,6 @@ volumes:
   data:
 services:
 
-  financial-strategy:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    networks:
-      - financial-strategy-network
-    depends_on:
-      - "postgres-financial-strategy"
-    env_file:
-      - .env.example
-
   postgres-financial-strategy:
     image: postgres:alpine
     environment:

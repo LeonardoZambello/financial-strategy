@@ -3,6 +3,8 @@ import { mock } from "jest-mock-extended";
 import { ISymbolRepository } from "../repositories/symbol.repository";
 import { SymbolsNotFound } from "../exceptions/symbols-not-found.exception";
 import { Symbol } from "../entities/symbol.entity";
+import { SymbolNotFound } from "../exceptions/symbol-not-found.exception";
+import { v4 as uuidv4 } from 'uuid';
 
 const setupDependencies = () => {
 	const symbolRepository = mock<ISymbolRepository>();
@@ -11,53 +13,71 @@ const setupDependencies = () => {
 	};
 }; 
 
+const getSymbol = (): Symbol => {
+    const symbol = new Symbol();
+    symbol.id = uuidv4();
+    symbol.name = 'ABC';
+    symbol.roe = 100;
+    symbol.roePosition = 1;
+    symbol.forwardPE = 10;
+    symbol.forwardPEPosition = 1;
+    symbol.ranking = 2;
+    symbol.createdAt = new Date();
+    symbol.updatedAt = new Date();
+    symbol.reason = null;
+    return symbol;
+};
+
 describe('SaveSymbolsUseCase', () => {
     let saveSymbolsUseCase: SaveSymbolsUseCase
 
-    it('Should save symbols with success', async () => {
-        const symbolOne = new Symbol();
-        symbolOne.name = 'AAAA5';
-
-        const symbolTwo = new Symbol();
-        symbolTwo.name = 'AAAA6';
-
-        const symbols = new Array<Symbol>();
-        symbols.push(symbolOne, symbolTwo)
-
+    it('Should throws if not receive a symbol to save', async () => {
         const { symbolRepository } = setupDependencies();
 
         saveSymbolsUseCase = new SaveSymbolsUseCase(symbolRepository);
 
-        await saveSymbolsUseCase.handle(symbols);
-
-        expect(symbolRepository.findByName).toBeCalledTimes(symbols.length);
-        expect(symbolRepository.save).toBeCalledTimes(symbols.length);
-    });
-    it('Should throws if none symbols is provided', async () => {
-        const { symbolRepository } = setupDependencies();
-
-        saveSymbolsUseCase = new SaveSymbolsUseCase(symbolRepository);
-
-        await expect(saveSymbolsUseCase.handle([])).rejects.toThrowError(new SymbolsNotFound());
-        expect(symbolRepository.save).not.toBeCalled();
+        await expect(saveSymbolsUseCase.handle(null)).rejects.toThrowError(new SymbolNotFound());
         expect(symbolRepository.findByName).not.toBeCalled();
+        expect(symbolRepository.save).not.toBeCalled();
     });
-    it('Should not save a symbol duplicated', async () => {
-        const symbolOne = new Symbol();
-        symbolOne.name = 'AAAA6';
-
-        const symbols = new Array<Symbol>();
-        symbols.push(symbolOne)
-
+    it('Should update a symbol if it already exists on repository', async () => {
         const { symbolRepository } = setupDependencies();
 
-        symbolRepository.findByName.mockReturnValueOnce(Promise.resolve(symbolOne));
+        const symbolFromDB = getSymbol();
+
+        const symbol = new Symbol();
+        symbol.name = 'ABC';
+        symbol.roe = 90;
+        symbol.forwardPE = 1000;
+
+        const symbolToSave = Object.assign(symbol, symbolFromDB);
+
+        symbolRepository.findByName.mockReturnValueOnce(Promise.resolve(symbolFromDB));
 
         saveSymbolsUseCase = new SaveSymbolsUseCase(symbolRepository);
 
-        await saveSymbolsUseCase.handle(symbols);
+        await saveSymbolsUseCase.handle(symbol);
 
-        expect(symbolRepository.save).not.toBeCalled();
-        expect(symbolRepository.findByName).toBeCalledTimes(symbols.length);
+        expect(symbolRepository.findByName).toBeCalledWith(symbol.name);
+        expect(symbolRepository.save).toBeCalledTimes(1);
+        expect(symbolRepository.save).toBeCalledWith(symbolToSave);
+    });
+    it('Should save a new symbol if not found a symbol into repository', async () => {
+        const { symbolRepository } = setupDependencies();
+
+        const symbol = new Symbol();
+        symbol.name = 'ABC';
+        symbol.roe = 90;
+        symbol.forwardPE = 1000;
+
+        symbolRepository.findByName.mockReturnValueOnce(Promise.resolve(null));
+
+        saveSymbolsUseCase = new SaveSymbolsUseCase(symbolRepository);
+
+        await saveSymbolsUseCase.handle(symbol);
+
+        expect(symbolRepository.findByName).toBeCalledWith(symbol.name);
+        expect(symbolRepository.save).toBeCalledTimes(1);
+        expect(symbolRepository.save).toBeCalledWith(symbol);
     });
 });

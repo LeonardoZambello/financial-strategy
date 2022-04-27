@@ -7,6 +7,7 @@ export interface ISymbolRepository {
     save(symbols: Symbol): Promise<void>;
     findByName(name: string): Promise<Symbol>;
     findAll(paginationVO: PaginationVO): Promise<Symbol[]>;
+    delete(name: string): Promise<void>;
 }
 
 export const SYMBOL_REPOSITORY_NAME = 'ISymbolRepository'
