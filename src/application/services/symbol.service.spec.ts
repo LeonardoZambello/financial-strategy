@@ -12,6 +12,7 @@ import { FindAllSymbolsUseCase } from "../../domain/use-cases/find-all-symbols.u
 import { DeleteSymbolUseCase } from "../../domain/use-cases/delete-symbol.use-case";
 import { CollectAndUpdateSymbolsValuesUseCase } from "../../domain/use-cases/collect-and-update-symbols-values.use-case";
 import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
+import { RequiredQueryStrings } from "../rest/query-strings/required-query-strings";
 
 const getSymbolNameListDTO = () => {
     const symbolNameListDTO = new SymbolNameListDTO();
@@ -143,36 +144,43 @@ describe('SymbolService', () => {
     it('Shold find symbols with pagination parameters with success', async () => {
         const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
+        const query = new RequiredQueryStrings();
+        query.size = 7;
         const symbols = new Array<Symbol>();
         const symbol = getSymbol();
         symbols.push(symbol);
+        const mockCount = 15;
 
-        findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve(symbols));
+        findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve([symbols, mockCount]));
 
         symbolMapper.createDomainToDTO.mockReturnValueOnce(getFindSymbolByNameDTO(symbol));
 
         const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
-        const result = await symbolService.findAllSymbols();
+        const [result, count, pageCount] = await symbolService.findAllSymbols(query);
 
         expect(result.length).toBe(1);
+        expect(count).toBe(15);
+        expect(pageCount).toBe(3);
         expect(findAllSymbolsUseCase.handle).toBeCalledTimes(1);
         expect(symbolMapper.createDomainToDTO).toBeCalledTimes(symbols.length);
     });
-    it('Should return null if not found symbols with pagination parameters', async () => {
+    it('Should return empty if not found symbols with pagination parameters', async () => {
         const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();
 
-        const symbols = new Array<Symbol>();
-        const symbol = getSymbol();
-        symbols.push(symbol);
+        const query = new RequiredQueryStrings();
+        const mockCount = 0;
 
-        findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve(null));
+        findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve([[], mockCount]));
 
         const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
-        const result = await symbolService.findAllSymbols();
+        const [result, count, pageCount] = await symbolService.findAllSymbols(query);
 
-        expect(result).toBeNull();
+        expect(result).not.toBeNull();
+        expect(result.length).toBe(0);
+        expect(count).toBe(0);
+        expect(pageCount).toBe(0);
         expect(findAllSymbolsUseCase.handle).toBeCalledTimes(1);
         expect(symbolMapper.createDomainToDTO).not.toBeCalled();
     });

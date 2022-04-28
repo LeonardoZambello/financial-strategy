@@ -20,31 +20,29 @@ export class SymbolRepository implements ISymbolRepository {
         })
     }
 
-    async findAll(paginationVO: PaginationVO): Promise<Symbol[]> {
+    async findAll(paginationVO: PaginationVO): Promise<[Symbol[], Number]> {
         const {
-            limit,
-            skip,
-            forwardPE,
-            roe
+            page,
+            size,
+            sort,
+            order
         } = paginationVO;
 
-        let queryBase = this.symbolRepository.createQueryBuilder('symbol')
-            .skip(Number(skip ?? 0))
-            .take(Number(limit ?? 25))
-            .orderBy('symbol.createdAt', 'DESC');
+        const orderOptions = {  };
+        orderOptions[sort] = order;
 
-
-        if (!forwardPE && !roe) queryBase = queryBase.andWhere(`symbol.roe is null`).andWhere(`symbol.forwardPE is null`);
-
-        if (forwardPE && !roe) queryBase = queryBase.andWhere(`symbol.roe is null`).andWhere(`symbol.forwardPE <= :forwardPE`, { forwardPE: forwardPE });
-
-        if (!forwardPE && roe) queryBase = queryBase.andWhere(`symbol.roe >= :roe`, { roe: roe }).andWhere(`symbol.forwardPE is null`);
-
-        if (forwardPE && roe) queryBase = queryBase.andWhere(`symbol.roe >= :roe`, { roe: roe }).andWhere(`symbol.forwardPE <= :forwardPE`, { forwardPE: forwardPE });
-
-        const symbols = await queryBase.getMany();
-
-        return symbols;
+        return await this.symbolRepository.findAndCount(
+          {
+            where: {
+              ranking: Not(IsNull()),
+              roe: Not(IsNull()),
+              forwardPE: Not(IsNull())
+             },
+            order: orderOptions,
+            take: size,
+            skip: (page - 1) * size
+          }
+        );
     }
 
     async saveAll(symbols: Symbol[]): Promise<void> {
