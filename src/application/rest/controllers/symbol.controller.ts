@@ -1,10 +1,11 @@
 /* istanbul ignore file */
 
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Response } from "@nestjs/common";
 import { CreateOrUpdateSymbolDTO } from "src/application/dto/create-or-update-symbol.dto";
 import { FindSymbolByNameDTO } from "../../dto/find-symbol-by-name.dto";
 import { SymbolService } from "../../services/symbol.service";
-import { RequiredQueryStrings } from "../query-strins/required-query-strings";
+import { RequiredQueryStrings } from "../query-strings/required-query-strings";
+import { Response as Res} from "express"
 
 @Controller('symbol')
 export class SymbolController {
@@ -19,8 +20,15 @@ export class SymbolController {
         return await this.symbolSerivce.findSymbolByName(name);
     }
     @Get()
-    async findAll(@Query() query: RequiredQueryStrings): Promise<FindSymbolByNameDTO[]> {
-        return await this.symbolSerivce.findAllSymbols();
+    async findAll(@Query() query: RequiredQueryStrings, @Response() res: Res): Promise<Res> {7
+        const [symbols, count, pageCount] = await this.symbolSerivce.findAllSymbols(query);
+
+        res.set({
+          'x-total-count': count,
+          'x-total-pages': pageCount
+        }).json(symbols);
+
+        return res;
     }
     @Delete(':name')
     async delete(@Param('name') name: string): Promise<void> {

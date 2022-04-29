@@ -9,7 +9,7 @@ export class FindAllSymbolsUseCase {
         @Inject(SYMBOL_REPOSITORY_NAME) private symbolRepository: ISymbolRepository
     ) { }
 
-    async handle(paginationVO: PaginationVO): Promise<Symbol[]> {
+    async handle(paginationVO: PaginationVO): Promise<[Symbol[], Number]> {
         return await this.symbolRepository.findAll(paginationVO);
     }
 }
