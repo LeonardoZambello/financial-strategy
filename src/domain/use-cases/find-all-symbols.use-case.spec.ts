@@ -1,4 +1,6 @@
 import { mock } from "jest-mock-extended";
+import { OrderEnum } from "../entities/order.enum";
+import { SortOptionsEnum } from "../entities/sort-options.enum";
 import { Symbol } from "../entities/symbol.entity";
 import { ISymbolRepository } from "../repositories/symbol.repository";
 import { PaginationVO } from "../value_objects/pagination.value-object";
@@ -28,10 +30,10 @@ const buildSymbol = (): Symbol => {
 
 const buildPaginationVO = (): PaginationVO => {
     const paginationVO = new PaginationVO();
-    paginationVO.limit = '25';
-    paginationVO.skip = '5';
-    paginationVO.roe = null;
-    paginationVO.forwardPE = null;
+    paginationVO.page = 2;
+    paginationVO.size = 7;
+    paginationVO.sort = SortOptionsEnum.RANKING_PE;
+    paginationVO.order = OrderEnum.DESC;
     return paginationVO;
 }
 
@@ -44,15 +46,16 @@ describe('FindAllSymbolsUseCase', () => {
         const symbol = buildSymbol();
         symbols.push(symbol);
 
-        symbolRepository.findAll.mockReturnValueOnce(Promise.resolve(symbols));
+        symbolRepository.findAll.mockReturnValueOnce(Promise.resolve([symbols, 15]));
 
         findAllSymbolsUseCase = new FindAllSymbolsUseCase(symbolRepository);
 
         const paginationVO = buildPaginationVO();
 
-        const result = await findAllSymbolsUseCase.handle(paginationVO);
+        const [result, count] = await findAllSymbolsUseCase.handle(paginationVO);
 
         expect(result.length).toBe(1);
+        expect(count).toBe(15);
         expect(symbolRepository.findAll).toBeCalledWith(paginationVO);
     });
 });

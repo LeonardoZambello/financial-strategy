@@ -70,4 +70,19 @@ describe('SymbolMapper', () => {
         expect(dto.ranking).toBe(symbol.ranking);
         expect(dto.reason).toBe(symbol.reason);
     });
+    it('Should return a RankingSymbolDTO', () => {
+        const symbol = getSymbol();
+
+        const symbolMapper = new SymbolMapper();
+
+        const dto = symbolMapper.createDomainToRankingDTO(symbol);
+
+        expect(dto.symbol).toBe(symbol.name);
+        expect(dto.ranking).toBe(symbol.ranking);
+        expect(dto.rankingRoe).toBe(symbol.roePosition);
+        expect(dto.rankingPE).toBe(symbol.forwardPEPosition);
+        expect(dto.roe).toBe(symbol.roe);
+        expect(dto.forwardPE).toBe(symbol.forwardPE);
+        expect(dto.updatedAt).toBe(symbol.updatedAt);
+    });
 });

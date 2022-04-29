@@ -10,6 +10,8 @@ import { FindAllSymbolsUseCase } from "../../domain/use-cases/find-all-symbols.u
 import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 import { DeleteSymbolUseCase } from "../../domain/use-cases/delete-symbol.use-case";
 import { CollectAndUpdateSymbolsValuesUseCase } from "../../domain/use-cases/collect-and-update-symbols-values.use-case";
+import { RequiredQueryStrings } from "../rest/query-strings/required-query-strings";
+import { RankingSymbolDTO } from "../dto/ranking-symbol.dto";
 
 @Injectable()
 export class SymbolService {
@@ -39,16 +41,18 @@ export class SymbolService {
 
         return dto;
     }
-    async findAllSymbols(): Promise<FindSymbolByNameDTO[]> {
-        const pagination = Object.assign(new PaginationVO, this.request.query);
+    async findAllSymbols(query: RequiredQueryStrings): Promise<[RankingSymbolDTO[], Number, Number]> {
+        const pagination = Object.assign(new PaginationVO, query);
 
-        const symbols = await this.findAllSymbolsUseCase.handle(pagination);
+        const [symbols, count] = await this.findAllSymbolsUseCase.handle(pagination);
 
         if (!symbols) return null;
 
-        const findSymbolByNameDTO = symbols.map(this.symbolMapper.createDomainToDTO);
+        const findSymbolByNameDTO = symbols.map(this.symbolMapper.createDomainToRankingDTO);
 
-        return findSymbolByNameDTO;
+        let pageCount = Math.ceil(count.valueOf() / query.size)
+
+        return [findSymbolByNameDTO, count, pageCount];
     }
     async delete(name: string): Promise<void> {
         if (!name) return null;
