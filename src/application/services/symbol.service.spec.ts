@@ -13,6 +13,7 @@ import { DeleteSymbolUseCase } from "../../domain/use-cases/delete-symbol.use-ca
 import { CollectAndUpdateSymbolsValuesUseCase } from "../../domain/use-cases/collect-and-update-symbols-values.use-case";
 import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 import { RequiredQueryStrings } from "../rest/query-strings/required-query-strings";
+import { RankingSymbolDTO } from "../dto/ranking-symbol.dto";
 
 const getSymbolNameListDTO = () => {
     const symbolNameListDTO = new SymbolNameListDTO();
@@ -147,23 +148,24 @@ describe('SymbolService', () => {
         const query = new RequiredQueryStrings();
         query.size = 7;
         const symbols = new Array<Symbol>();
-        const symbol = getSymbol();
-        symbols.push(symbol);
+        symbols.push(getSymbol());
+        symbols.push(getSymbol());
+        symbols.push(getSymbol());
         const mockCount = 15;
 
         findAllSymbolsUseCase.handle.mockReturnValueOnce(Promise.resolve([symbols, mockCount]));
 
-        symbolMapper.createDomainToDTO.mockReturnValueOnce(getFindSymbolByNameDTO(symbol));
+        symbolMapper.createDomainToRankingDTO.mockReturnValueOnce(new RankingSymbolDTO());
 
         const symbolService = new SymbolService(saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request);
 
         const [result, count, pageCount] = await symbolService.findAllSymbols(query);
 
-        expect(result.length).toBe(1);
+        expect(result.length).toBe(3);
         expect(count).toBe(15);
         expect(pageCount).toBe(3);
         expect(findAllSymbolsUseCase.handle).toBeCalledTimes(1);
-        expect(symbolMapper.createDomainToDTO).toBeCalledTimes(symbols.length);
+        expect(symbolMapper.createDomainToRankingDTO).toBeCalledTimes(symbols.length);
     });
     it('Should return empty if not found symbols with pagination parameters', async () => {
         const { saveSymbolUseCase, findSymbolByNameUseCase, findAllSymbolsUseCase, deleteSymbolUseCase, collectAndUpdateSymbolsValuesUseCase, symbolMapper, request } = setupDependencies();

@@ -2,6 +2,7 @@ import { Injectable, Scope } from "@nestjs/common";
 import { Symbol } from "../../domain/entities/symbol.entity";
 import { CreateOrUpdateSymbolDTO } from "../dto/create-or-update-symbol.dto";
 import { FindSymbolByNameDTO } from "../dto/find-symbol-by-name.dto";
+import { RankingSymbolDTO } from "../dto/ranking-symbol.dto";
 import { SymbolNameListDTO } from "../dto/symbol-name-list.dto";
 
 @Injectable({
@@ -27,5 +28,16 @@ export class SymbolMapper {
         dto.ranking = symbol.ranking ? Number(symbol.ranking) : null;
         dto.reason = symbol.reason;
         return dto;
+    }
+    createDomainToRankingDTO(symbol: Symbol): RankingSymbolDTO {
+      const dto = new RankingSymbolDTO();
+      dto.symbol = symbol.name;
+      dto.ranking = symbol.ranking;
+      dto.rankingRoe = symbol.roePosition;
+      dto.rankingPE = symbol.forwardPEPosition;
+      dto.roe = symbol.roe;
+      dto.forwardPE = symbol.forwardPE;
+      dto.updatedAt = symbol.updatedAt;
+      return dto;
     }
 }
