@@ -3,41 +3,41 @@
 import { Global, Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { SYMBOL_DATA_COLLECTOR_NAME } from "src/domain/collector/symbol-data.collector";
-import { SYMBOL_REPOSITORY_NAME } from "../domain/repositories/symbol.repository";
+import { STOCK_DATA_COLLECTOR_NAME } from "../domain/collector/stock-data.collector";
+import { STOCK_REPOSITORY_NAME } from "../domain/repositories/symbol.repository";
 import { MeusDividendosAPIClient } from "./api-client/meus-dividendos.api-client";
 import { YahooFinanceAPICliente } from "./api-client/yahoo-finance.api-client";
-import { CollectSymbolForwardPEJob } from "./jobs/collect-symbol-forwardpe.job";
-import { CollectSymbolROEJob } from "./jobs/collect-symbol-roe.job";
-import { RankSymbolsJob } from "./jobs/rank-symbols.job";
+import { CollectStockForwardPEJob } from "./jobs/collect-stock-forwardpe.job";
+import { CollectStockROEJob } from "./jobs/collect-stock-roe.job";
+import { RankStocksJob } from "./jobs/rank-stocks.job";
 import TypeOrmConnectionOptions from "./persistence/postgres/config/config-connection";
-import { SymbolRepository } from "./persistence/postgres/repositories/symbol.repository";
-import { SymbolSchema } from "./persistence/postgres/schema/symbol.schema";
+import { StockRepository } from "./persistence/postgres/repositories/stock.repository";
+import { StockSchema } from "./persistence/postgres/schema/stock.schema";
 
 @Global()
 @Module({
 	imports: [
 		TypeOrmModule.forRoot(TypeOrmConnectionOptions),
 		TypeOrmModule.forFeature([
-			SymbolSchema
+			StockSchema
 		]),
 		ScheduleModule.forRoot(),
 	],
 	providers: [
 		{
-			provide: SYMBOL_REPOSITORY_NAME,
-			useClass: SymbolRepository
+			provide: STOCK_REPOSITORY_NAME,
+			useClass: StockRepository
 		},
 		{
-			provide: SYMBOL_DATA_COLLECTOR_NAME,
+			provide: STOCK_DATA_COLLECTOR_NAME,
 			useClass: MeusDividendosAPIClient
 		},
-		CollectSymbolForwardPEJob,
-		CollectSymbolROEJob,
-		RankSymbolsJob,
+		CollectStockForwardPEJob,
+		CollectStockROEJob,
+		RankStocksJob,
 		YahooFinanceAPICliente,
 	],
 	controllers: [],
-	exports: [SYMBOL_REPOSITORY_NAME, SYMBOL_DATA_COLLECTOR_NAME, CollectSymbolForwardPEJob, CollectSymbolROEJob, RankSymbolsJob, YahooFinanceAPICliente],
+	exports: [STOCK_REPOSITORY_NAME, STOCK_DATA_COLLECTOR_NAME, CollectStockForwardPEJob, CollectStockROEJob, RankStocksJob, YahooFinanceAPICliente],
 })
 export class InfrastructureModule {}

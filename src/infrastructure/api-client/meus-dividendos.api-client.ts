@@ -1,10 +1,12 @@
+/* istanbul ignore file */
+
 import { Logger } from "@nestjs/common";
 import axios from "axios";
-import { ISymbolDataCollector } from "src/domain/collector/symbol-data.collector";
-import { Symbol } from "../../domain/entities/symbol.entity";
+import { IStockDataCollector } from "../../domain/collector/stock-data.collector";
+import { Stock } from "../../domain/entities/stock.entity";
 import { ErrorWhileCallingAPI } from "../exceptions/error-while-calling-api.excepetion";
 
-export class MeusDividendosAPIClient implements ISymbolDataCollector {
+export class MeusDividendosAPIClient implements IStockDataCollector {
 
     private logger = new Logger(MeusDividendosAPIClient.name);
     private readonly MEUS_DIVIDENDOS_BASE_URL = process.env.MEUS_DIVIDENDOS_BASE_URL;
@@ -12,26 +14,27 @@ export class MeusDividendosAPIClient implements ISymbolDataCollector {
     private readonly MEUS_DIVIDENDOS_LUCRO_LIQUIDO_ROUTE = process.env.MEUS_DIVIDENDOS_LUCRO_LIQUIDO_ROUTE;
     private readonly MEUS_DIVIDENDOS_ROE_ROUTE = process.env.MEUS_DIVIDENDOS_ROE_ROUTE;
 
-    async collectData(): Promise<Symbol[]> {
+    async collectData(): Promise<Stock[]> {
         const empresas = {};
 
         await this.populaValor(empresas, `${this.MEUS_DIVIDENDOS_BASE_URL}${this.MEUS_DIVIDENDOS_ROE_ROUTE}`, "roe");
         await this.populaValor(empresas, `${this.MEUS_DIVIDENDOS_BASE_URL}${this.MEUS_DIVIDENDOS_VALOR_MERCADO_ROUTE}`, "valorMercado");
         await this.populaValor(empresas, `${this.MEUS_DIVIDENDOS_BASE_URL}${this.MEUS_DIVIDENDOS_LUCRO_LIQUIDO_ROUTE}`, "lucroLiquido");
 
-        const symbols = new Array<Symbol>();
+        const stocks = new Array<Stock>();
 
         const entries: any = Object.entries(empresas);
 
         entries.forEach(data => {
-            const symbol = new Symbol();
-            symbol.name = String(data[0]);
-            Number(data[1].roe) === 0 ? symbol.roe = null : symbol.roe = Number(data[1].roe);
-            (Number(data[1].valorMercado) === 0 || Number(data[1].lucroLiquido) === 0) ? symbol.forwardPE = null : symbol.forwardPE = ((Number(data[1].valorMercado)) / Number(data[1].lucroLiquido));
-            symbols.push(symbol);
+            const stock = new Stock();
+            stock.symbol = String(data[0]);
+            stock.name = String(data[1].nomeEmpresa);
+            Number(data[1].roe) === 0 ? stock.roe = null : stock.roe = Number(data[1].roe);
+            (Number(data[1].valorMercado) === 0 || Number(data[1].lucroLiquido) === 0) ? stock.forwardPE = null : stock.forwardPE = ((Number(data[1].valorMercado)) / Number(data[1].lucroLiquido));
+            stocks.push(stock);
         });
 
-        return symbols;
+        return stocks;
     }
 
     private getPrimeiraTabela(html: string): string {
@@ -49,6 +52,9 @@ export class MeusDividendosAPIClient implements ISymbolDataCollector {
     private getValor(elementosLinha: any): any {
         return elementosLinha[3].match("<td><span.*?>(.*?)<\/span>")[1];
     }
+    private getNameEmpresa(elementosLinha: any): any {
+        return elementosLinha[1].match("<span.*?>(.*?)<\/span>")[1];
+    }
     private async populaValor(empresas: any, url: string, campo: string) {
         try {
             const { data } = await axios.get(url);
@@ -62,6 +68,12 @@ export class MeusDividendosAPIClient implements ISymbolDataCollector {
                 const sigla = this.getSiglaEmpresa(campos);
                 if (!empresas[sigla]) empresas[sigla] = {};
                 empresas[sigla][campo] = this.getValor(campos);
+                if (campo === 'roe') {
+                    const nomeEmpresa = {
+                        nomeEmpresa: this.getNameEmpresa(campos)
+                    }
+                    Object.assign(empresas[sigla], nomeEmpresa);
+                }
             });
         } catch (error) {
             this.logger.error(`Error while calling meusdividendos API: ${error}`);

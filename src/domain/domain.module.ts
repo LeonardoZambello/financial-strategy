@@ -1,26 +1,26 @@
 /* istanbul ignore file */
 
 import { Module } from "@nestjs/common";
-import { CollectAndUpdateSymbolsValuesUseCase } from "./use-cases/collect-and-update-symbols-values.use-case";
-import { DeleteSymbolUseCase } from "./use-cases/delete-symbol.use-case";
-import { FindAllSymbolsUseCase } from "./use-cases/find-all-symbols.use-case";
-import { FindSymbolByNameUseCase } from "./use-cases/find-symbol-by-name";
-import { SaveSymbolsUseCase } from "./use-cases/save-symbols";
+import { CollectAndUpdateStocksValuesUseCase } from "./use-cases/collect-and-update-stocks-values.use-case";
+import { DeleteStockUseCase } from "./use-cases/delete-stock.use-case";
+import { FindAllStocksUseCase } from "./use-cases/find-all-stocks.use-case";
+import { FindStockBySymbolUseCase } from "./use-cases/find-stock-by-symbol";
+import { SaveStockUseCase } from "./use-cases/save-stocks";
 
 @Module({
 	providers: [
-		SaveSymbolsUseCase,
-		FindSymbolByNameUseCase,
-		FindAllSymbolsUseCase,
-		DeleteSymbolUseCase,
-		CollectAndUpdateSymbolsValuesUseCase
+		SaveStockUseCase,
+		FindStockBySymbolUseCase,
+		FindAllStocksUseCase,
+		DeleteStockUseCase,
+		CollectAndUpdateStocksValuesUseCase
 	],
 	exports: [
-		SaveSymbolsUseCase,
-		FindSymbolByNameUseCase,
-		FindAllSymbolsUseCase,
-		DeleteSymbolUseCase,
-		CollectAndUpdateSymbolsValuesUseCase
+		SaveStockUseCase,
+		FindStockBySymbolUseCase,
+		FindAllStocksUseCase,
+		DeleteStockUseCase,
+		CollectAndUpdateStocksValuesUseCase
 	],
 })
 export class DomainModule {}
