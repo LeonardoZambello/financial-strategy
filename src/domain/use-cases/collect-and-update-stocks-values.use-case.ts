@@ -24,9 +24,6 @@ export class CollectAndUpdateStocksValuesUseCase {
             stock.roe === null ? stockFromDB.roe = stockFromDB.roe : stockFromDB.roe = stock.roe;
             stock.forwardPE === null ? stockFromDB.forwardPE = stockFromDB.forwardPE : stockFromDB.forwardPE = stock.forwardPE;
 
-            /*stockFromDB.roe = stock.roe;
-            stockFromDB.forwardPE = stock.forwardPE;*/
-
             await this.stockRepository.save(stockFromDB);
         }
     }
