@@ -1,13 +1,13 @@
 /* istanbul ignore file */
 
 import { ConnectionOptions } from 'typeorm';
-import { SymbolSchema } from '../schema/symbol.schema';
+import { StockSchema } from '../schema/stock.schema';
 
 const TypeOrmConnectionOptions: ConnectionOptions = {
 	url: process.env.DATABASE_URL,
 	type: 'postgres',
 	entities: [
-		SymbolSchema
+		StockSchema
 	],
 	migrationsRun: false,
 	migrations: [process.env.NODE_ENV === 'development' ? __dirname + '/../migrations/**/*.ts' : 'dist/infrastructure/persistence/postgres/migrations/**/*.js'],
