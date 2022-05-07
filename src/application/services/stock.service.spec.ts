@@ -53,6 +53,7 @@ const setupDependencies = () => {
 }; 
 
 const getStock = (): Stock => {
+    
     const stock = new Stock();
     stock.id = uuidv4();
     stock.name = 'ANYNAME';
