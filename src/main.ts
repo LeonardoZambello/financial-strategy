@@ -13,7 +13,9 @@ async function bootstrap() {
 
   app.useGlobalFilters(new DomainExceptionFilter(), new InfrastructureExceptionFilter());
 
-  app.enableCors();
+  app.enableCors({
+    allowedHeaders: 'Content-Type, Accept, X-Total-Count, X-Total-Pages'
+  });
   
   await app.listen(process.env.PORT || 3000);
 }
