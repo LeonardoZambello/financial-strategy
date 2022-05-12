@@ -71,6 +71,14 @@ export class StockSchema {
     })
     reason: string;
 
+    @Column({
+        type: 'timestamp',
+        nullable: true,
+        name: 'blacklistedAt',
+        unique: false
+    })
+    blacklistedAt: Date;
+
     @CreateDateColumn({
         type: 'timestamp',
         nullable: false,

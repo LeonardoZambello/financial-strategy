@@ -16,6 +16,7 @@ describe('RequiredQueryStrings', () => {
         expect(requiredQueryStrings.size).toBe(25);
         expect(requiredQueryStrings.sort).toBe(SortOptionsEnum.RANKING);
         expect(requiredQueryStrings.order).toBe(OrderEnum.ASC);
+        expect(requiredQueryStrings.blacklist).toBeFalsy();
     });
     it('Should validate if size is number', async () => {
         requiredQueryStrings = new RequiredQueryStrings();

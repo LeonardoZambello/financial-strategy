@@ -25,7 +25,8 @@ export class StockRepository implements IStockRepository {
             page,
             size,
             sort,
-            order
+            order,
+            blacklist
         } = paginationVO;
 
         const orderOptions = {  };
@@ -36,7 +37,8 @@ export class StockRepository implements IStockRepository {
             where: {
               ranking: Not(IsNull()),
               roe: Not(IsNull()),
-              forwardPE: Not(IsNull())
+              forwardPE: Not(IsNull()),
+              blacklistedAt: !blacklist ? IsNull() : Not(IsNull())
              },
             order: orderOptions,
             take: size,
