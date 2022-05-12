@@ -8,4 +8,5 @@ export class PaginationVO {
     size: number;
     sort: SortOptionsEnum;
     order: OrderEnum;
+    blacklist: boolean;
 }

@@ -10,6 +10,7 @@ export class Stock {
     forwardPEPosition: number;
     ranking: number;
     reason: string;
+    blacklistedAt: Date;
     createdAt: Date;
     updatedAt: Date;
 }

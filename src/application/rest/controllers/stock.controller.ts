@@ -12,15 +12,31 @@ export class StockController {
     constructor(private stockService: StockService) { }
 
     @Post()
-    async save(@Body() createOrUpdateStockDTO: CreateOrUpdateStockDTO): Promise<void> {
+    public async save(@Body() createOrUpdateStockDTO: CreateOrUpdateStockDTO): Promise<void> {
         return await this.stockService.save(createOrUpdateStockDTO);
     }
+    @Post('/update')
+    public async createOrUpdateSymbols(): Promise<void> {
+        await this.stockService.createOrUpdateStocks();
+    }
+    @Post(':symbol/blacklist')
+    public async addStockToBlacklist(@Param('symbol') symbol: string): Promise<void> {
+        await this.stockService.addStockToBlacklist(symbol);
+    }
+    @Delete(':symbol/blacklist')
+    public async removeStockFromBlacklist(@Param('symbol') symbol: string): Promise<void> {
+        await this.stockService.removeStockFromBlacklist(symbol);
+    }
+    @Delete(':symbol')
+    public async delete(@Param('symbol') symbol: string): Promise<void> {
+        await this.stockService.delete(symbol);
+    }
     @Get(':symbol')
-    async findByName(@Param('symbol') symbol: string): Promise<FindStockBySymbolDTO> {
+    public async findByName(@Param('symbol') symbol: string): Promise<FindStockBySymbolDTO> {
         return await this.stockService.findStockBySymbol(symbol);
     }
     @Get()
-    async findAll(@Query() query: RequiredQueryStrings, @Response() res: Res): Promise<Res> {7
+    public async findAll(@Query() query: RequiredQueryStrings, @Response() res: Res): Promise<Res> {7
         const [symbols, count, pageCount] = await this.stockService.findAllSymbols(query);
 
         res.set({
@@ -29,13 +45,5 @@ export class StockController {
         }).json(symbols);
 
         return res;
-    }
-    @Delete(':name')
-    async delete(@Param('name') name: string): Promise<void> {
-        await this.stockService.delete(name);
-    }
-    @Post('/update')
-    async createOrUpdateSymbols(): Promise<void> {
-        await this.stockService.createOrUpdateStocks();
     }
 }

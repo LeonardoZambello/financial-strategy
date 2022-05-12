@@ -12,6 +12,8 @@ import { DeleteStockUseCase } from "../../domain/use-cases/delete-stock.use-case
 import { CollectAndUpdateStocksValuesUseCase } from "../../domain/use-cases/collect-and-update-stocks-values.use-case";
 import { RequiredQueryStrings } from "../rest/query-strings/required-query-strings";
 import { RankingStockDTO } from "../dto/ranking-stock.dto";
+import { AddStockToBlacklistUseCase } from "../../domain/use-cases/add-stock-to-blacklist.use-case";
+import { RemoveStockFromBlacklistUseCase } from "../../domain/use-cases/remove-stock-from-blacklist.use-case";
 
 @Injectable()
 export class StockService {
@@ -21,6 +23,8 @@ export class StockService {
         private findAllStocksUseCase: FindAllStocksUseCase,
         private deleteStockUseCase: DeleteStockUseCase,
         private collectAndUpdateStocksValuesUseCase: CollectAndUpdateStocksValuesUseCase,
+        private addStockToBlacklistUseCase: AddStockToBlacklistUseCase,
+        private removeStockFromBlacklistUseCase: RemoveStockFromBlacklistUseCase,
         private stockMapper: StockMapper,
         @Inject(REQUEST) private request: Request
     ) { }
@@ -59,7 +63,19 @@ export class StockService {
 
         await this.deleteStockUseCase.handle(symbol);
     }
+    async addStockToBlacklist(symbol: string): Promise<void> {
+
+        await this.addStockToBlacklistUseCase.handle(symbol);
+
+    }
+    async removeStockFromBlacklist(symbol: string): Promise<void> {
+
+        await this.removeStockFromBlacklistUseCase.handle(symbol);
+
+    }
     async createOrUpdateStocks(): Promise<void> {
+
         await this.collectAndUpdateStocksValuesUseCase.handle();
+
     }
 }

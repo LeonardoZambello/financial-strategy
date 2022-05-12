@@ -14,10 +14,12 @@ import { CollectAndUpdateStocksValuesUseCase } from "../../domain/use-cases/coll
 import { CreateOrUpdateStockDTO } from "../dto/create-or-update-stock.dto";
 import { RequiredQueryStrings } from "../rest/query-strings/required-query-strings";
 import { RankingStockDTO } from "../dto/ranking-stock.dto";
+import { AddStockToBlacklistUseCase } from "../../domain/use-cases/add-stock-to-blacklist.use-case";
+import { RemoveStockFromBlacklistUseCase } from "../../domain/use-cases/remove-stock-from-blacklist.use-case";
 
 const getStockNameListDTO = () => {
     const stockNameListDTO = new StockNameListDTO();
-    
+
     stockNameListDTO.names = ['AAAA5', 'AAAA6'];
 
     return stockNameListDTO;
@@ -25,35 +27,39 @@ const getStockNameListDTO = () => {
 
 const getCreateOrUpdateStockDTO = (changes = null): CreateOrUpdateStockDTO => {
     const createOrUpdateStockDTO = new CreateOrUpdateStockDTO();
-    
+
     createOrUpdateStockDTO.name = 'ABC';
     createOrUpdateStockDTO.PE = 100;
     createOrUpdateStockDTO.roe = 1;
 
     return Object.assign(createOrUpdateStockDTO, changes);
-} 
+}
 
 const setupDependencies = () => {
-	const saveStockUseCase = mock<SaveStockUseCase>();
+    const saveStockUseCase = mock<SaveStockUseCase>();
     const findStockBySymbolUseCase = mock<FindStockBySymbolUseCase>();
     const stockMapper = mock<StockMapper>();
     const findAllStocksUseCase = mock<FindAllStocksUseCase>();
     const deleteStockUseCase = mock<DeleteStockUseCase>();
     const collectAndUpdateStocksValuesUseCase = mock<CollectAndUpdateStocksValuesUseCase>();
+    const addStockToBlacklistUseCase = mock<AddStockToBlacklistUseCase>();
+    const removeStockFromBlacklistUseCase = mock<RemoveStockFromBlacklistUseCase>();
     const request = mock<Request>();
-	return {
-		saveStockUseCase,
+    return {
+        saveStockUseCase,
         findStockBySymbolUseCase,
         findAllStocksUseCase,
         deleteStockUseCase,
         collectAndUpdateStocksValuesUseCase,
+        addStockToBlacklistUseCase,
+        removeStockFromBlacklistUseCase,
         stockMapper,
         request
-	};
-}; 
+    };
+};
 
 const getStock = (): Stock => {
-    
+
     const stock = new Stock();
     stock.id = uuidv4();
     stock.name = 'ANYNAME';
@@ -85,9 +91,27 @@ describe('StockService', () => {
     it('Should return null if a invalid dto is provided', async () => {
         const stockNameList = null;
 
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const result = await stockService.save(stockNameList);
 
@@ -98,9 +122,27 @@ describe('StockService', () => {
     it('Should save a list of stocks if valid data is provided', async () => {
         const dto = getCreateOrUpdateStockDTO();
 
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         await stockService.save(dto);
 
@@ -111,9 +153,27 @@ describe('StockService', () => {
     it('Should return null if try to find a stock by symbol and receive a null symbol', async () => {
         const name = null;
 
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const result = await stockService.findStockBySymbol(name);
 
@@ -126,13 +186,31 @@ describe('StockService', () => {
 
         const stock = getStock();
 
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
         findStockBySymbolUseCase.handle.mockReturnValueOnce(Promise.resolve(stock));
 
         stockMapper.createDomainToDTO.mockReturnValueOnce(getFindStockBySymbolDTO(stock));
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const result = await stockService.findStockBySymbol(symbol);
 
@@ -147,7 +225,16 @@ describe('StockService', () => {
         expect(stockMapper.createDomainToDTO).toBeCalledWith(stock);
     });
     it('Shold find stocks with pagination parameters with success', async () => {
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
         const query = new RequiredQueryStrings();
         query.size = 7;
@@ -161,7 +248,16 @@ describe('StockService', () => {
 
         stockMapper.createDomainToRankingDTO.mockReturnValueOnce(new RankingStockDTO());
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const [result, count, pageCount] = await stockService.findAllSymbols(query);
 
@@ -172,14 +268,32 @@ describe('StockService', () => {
         expect(stockMapper.createDomainToRankingDTO).toBeCalledTimes(stocks.length);
     });
     it('Should return empty if not found stocks with pagination parameters', async () => {
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
         const query = new RequiredQueryStrings();
         const mockCount = 0;
 
         findAllStocksUseCase.handle.mockReturnValueOnce(Promise.resolve([[], mockCount]));
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const [result, count, pageCount] = await stockService.findAllSymbols(query);
 
@@ -191,18 +305,54 @@ describe('StockService', () => {
         expect(stockMapper.createDomainToDTO).not.toBeCalled();
     });
     it('Should return null if not receive a symbol to delete stock', async () => {
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const result = await stockService.delete(null);
 
         expect(result).toBeNull();
     });
     it('Should delete a stock with success', async () => {
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         const stockSymbol = 'ABCD';
 
@@ -211,12 +361,88 @@ describe('StockService', () => {
         expect(deleteStockUseCase.handle).toBeCalledWith(stockSymbol);
     });
     it('Should create or update a stock with success', async () => {
-        const { saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request } = setupDependencies();
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
 
-        const stockService = new StockService(saveStockUseCase, findStockBySymbolUseCase, findAllStocksUseCase, deleteStockUseCase, collectAndUpdateStocksValuesUseCase, stockMapper, request);
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
 
         await stockService.createOrUpdateStocks();
 
         expect(collectAndUpdateStocksValuesUseCase.handle).toBeCalledTimes(1);
+    });
+    it('Should add a stock to blacklist with success', async () => {
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
+
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
+
+        const symbol = 'ABC';
+
+        await stockService.addStockToBlacklist(symbol);
+
+        expect(addStockToBlacklistUseCase.handle).toBeCalledWith(symbol);
+    });
+    it('Should remove a stock from blacklist with success', async () => {
+        const {
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request } = setupDependencies();
+
+        const stockService = new StockService(
+            saveStockUseCase,
+            findStockBySymbolUseCase,
+            findAllStocksUseCase,
+            deleteStockUseCase,
+            collectAndUpdateStocksValuesUseCase,
+            addStockToBlacklistUseCase,
+            removeStockFromBlacklistUseCase,
+            stockMapper,
+            request);
+
+        const symbol = 'ABC';
+
+        await stockService.removeStockFromBlacklist(symbol);
+
+        expect(removeStockFromBlacklistUseCase.handle).toBeCalledWith(symbol);
     });
 });

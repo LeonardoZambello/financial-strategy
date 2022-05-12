@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsBoolean, IsBooleanString, IsEnum, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 import { OrderEnum } from "../../../domain/entities/order.enum";
 import { SortOptionsEnum } from "../../../domain/entities/sort-options.enum";
 
@@ -31,4 +31,11 @@ export class RequiredQueryStrings {
   @IsString()
   @IsEnum(OrderEnum)
   order: OrderEnum = OrderEnum.ASC
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(value => {
+    return value.value === 'true'
+  })
+  blacklist: boolean = false
 }
