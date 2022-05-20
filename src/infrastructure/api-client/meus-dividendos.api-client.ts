@@ -76,6 +76,10 @@ export class MeusDividendosAPIClient implements IStockDataCollector {
                 }
             });
         } catch (error) {
+            console.log(error);
+
+            this.logger.error(`Error while calling url to get: ${campo}`);
+
             this.logger.error(`Error while calling meusdividendos API: ${error}`);
 
             throw new ErrorWhileCallingAPI('Meusdividendos')
