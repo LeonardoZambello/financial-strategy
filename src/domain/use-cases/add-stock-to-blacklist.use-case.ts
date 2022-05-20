@@ -19,6 +19,9 @@ export class AddStockToBlacklistUseCase {
         if(stockFromDB.blacklistedAt) throw new StockAlreadyBlacklisted();
 
         stockFromDB.blacklistedAt = new Date();
+        stockFromDB.forwardPEPosition = null;
+        stockFromDB.roePosition = null;
+        stockFromDB.ranking = null;
 
         await this.stockRepository.save(stockFromDB);
     }
