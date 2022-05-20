@@ -12,6 +12,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.useGlobalFilters(new DomainExceptionFilter(), new InfrastructureExceptionFilter());
+
+  app.enableCors({
+    exposedHeaders: 'Content-Type, Accept, X-Total-Count, X-Total-Pages'
+  });
   
   await app.listen(process.env.PORT || 3000);
 }

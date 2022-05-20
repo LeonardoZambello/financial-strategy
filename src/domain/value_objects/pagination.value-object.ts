@@ -1,8 +1,12 @@
 /* istanbul ignore file */
 
+import { OrderEnum } from "../entities/order.enum";
+import { SortOptionsEnum } from "../entities/sort-options.enum";
+
 export class PaginationVO {
-    limit: string;
-    skip: string;
-    forwardPE: number;
-    roe: number;
+    page: number;
+    size: number;
+    sort: SortOptionsEnum;
+    order: OrderEnum;
+    blacklist: boolean;
 }

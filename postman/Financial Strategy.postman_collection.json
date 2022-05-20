@@ -11,18 +11,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/symbol/:name",
+					"raw": "{{host}}/stocks/:symbol",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"symbol",
-						":name"
+						"stocks",
+						":symbol"
 					],
 					"variable": [
 						{
-							"key": "name",
-							"value": "ITSA4"
+							"key": "symbol",
+							"value": "TRPN"
 						}
 					]
 				}
@@ -36,7 +36,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"TRPN\",\n    \"roe\": 99,\n    \"PE\": 99\n}",
+					"raw": "{\n    \"name\": \"ANYNAME\",\n    \"symbol\": \"TRPN\",\n    \"roe\": 100,\n    \"PE\": 99\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -44,12 +44,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/symbol",
+					"raw": "{{host}}/stocks",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"symbol"
+						"stocks"
 					]
 				}
 			},
@@ -61,31 +61,37 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/symbol?limit=100",
+					"raw": "{{host}}/stocks",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"symbol"
+						"stocks"
 					],
 					"query": [
 						{
-							"key": "limit",
-							"value": "100"
-						},
-						{
-							"key": "skip",
-							"value": "5",
+							"key": "size",
+							"value": "100",
 							"disabled": true
 						},
 						{
-							"key": "roe",
-							"value": "0.1",
+							"key": "page",
+							"value": "1",
 							"disabled": true
 						},
 						{
-							"key": "forwardPE",
-							"value": "15",
+							"key": "sort",
+							"value": "ranking",
+							"disabled": true
+						},
+						{
+							"key": "order",
+							"value": "ASC",
+							"disabled": true
+						},
+						{
+							"key": "blacklist",
+							"value": "true",
 							"disabled": true
 						}
 					]
@@ -99,13 +105,63 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/symbol/update",
+					"raw": "{{host}}/stocks/update",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"symbol",
+						"stocks",
 						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddStockToBlacklist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/stocks/:symbol/blacklist",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"stocks",
+						":symbol",
+						"blacklist"
+					],
+					"variable": [
+						{
+							"key": "symbol",
+							"value": "TRPN"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RemoveStockFromBlacklist",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/stocks/:symbol/blacklist",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"stocks",
+						":symbol",
+						"blacklist"
+					],
+					"variable": [
+						{
+							"key": "symbol",
+							"value": "TRPN"
+						}
 					]
 				}
 			},
