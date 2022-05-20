@@ -87,7 +87,9 @@ export class StockRepository implements IStockRepository {
         return await this.stockRepository.find({
             where: {
                 roe: Not(IsNull()),
-                reason: IsNull()
+                forwardPE: Not(IsNull()),
+                reason: IsNull(),
+                blacklistedAt: IsNull()
             },
             order: {
                 roe: "DESC"
@@ -99,7 +101,9 @@ export class StockRepository implements IStockRepository {
         return await this.stockRepository.find({
             where: {
                 forwardPE: Not(IsNull()) && MoreThan(0),
-                reason: IsNull()
+                roe: Not(IsNull()),
+                reason: IsNull(),
+                blacklistedAt: IsNull()
             },
             order: {
                 forwardPE: "ASC"
@@ -111,7 +115,9 @@ export class StockRepository implements IStockRepository {
         return await this.stockRepository.find({
             where: {
                 forwardPE: Not(IsNull()) && LessThan(0),
-                reason: IsNull()
+                roe: Not(IsNull()),
+                reason: IsNull(),
+                blacklistedAt: IsNull()
             },
             order: {
                 forwardPE: "DESC"
@@ -124,7 +130,8 @@ export class StockRepository implements IStockRepository {
             where: {
                 forwardPEPosition: Not(IsNull()),
                 roePosition: Not(IsNull()),
-                reason: IsNull()
+                reason: IsNull(),
+                blacklistedAt: IsNull()
             }
         })
     }
